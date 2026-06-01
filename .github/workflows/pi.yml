@@ -1,0 +1,57 @@
+name: Pi Agent
+
+on:
+    issues:
+        types: [opened]
+    issue_comment:
+        types: [created]
+
+jobs:
+    pi:
+        if: |
+            (github.event_name == 'issues' && contains(github.event.issue.body, '/pi')) ||
+            (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/pi'))
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            issues: write
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+
+            - name: Configure DeepSeek V4 Pro
+              run: |
+                  mkdir -p ~/.pi/agent
+                  cat > ~/.pi/agent/models.json << 'EOF'
+                  {
+                    "providers": {
+                      "deepseek": {
+                        "baseUrl": "https://api.deepseek.com",
+                        "apiKey": "${{ secrets.DEEPSEEK_API_KEY }}",
+                        "models": [{
+                          "id": "deepseek-v4-pro",
+                          "name": "DeepSeek V4 Pro",
+                          "api": "openai-chat",
+                          "cost": { "input": 0.000435, "output": 0.00087, "cacheRead": 0, "cacheWrite": 0 },
+                          "contextWindow": 1000000,
+                          "maxTokens": 65536
+                        }]
+                      }
+                    }
+                  }
+                  EOF
+
+            - uses: shaftoe/pi-coding-agent-action@v2
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  provider: deepseek
+                  model: deepseek-v4-pro
+                  token: ${{ secrets.DEEPSEEK_API_KEY }}
+                  thinking_level: high
+                  trigger: /pi

@@ -1,12 +1,12 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for the AI agent (Claude) running in GitHub Actions on this repo.
+Guidance for the AI agent (Pi, running on DeepSeek V4 Pro) in GitHub Actions.
 
 ## What this repo is
 
 A minimal, functional **DynamoDB adapter** npm package. It is the seed for a
 demo: all new code should arrive via pull requests opened by you (the AI agent),
-triggered from GitHub Issues (`@claude ...`) or the manual dispatch workflow.
+triggered from GitHub Issues/comments (`/pi ...`) or the manual dispatch workflow.
 
 ## Coding rules
 
