@@ -18,9 +18,8 @@ export const createRepository =
         try {
             const command: CreateRepositoryCommand = new CreateRepositoryCommand({
                 repositoryName,
-                imageScanningConfiguration: imageScanOnPush !== undefined
-                    ? { scanOnPush: imageScanOnPush }
-                    : undefined,
+                imageScanningConfiguration:
+                    imageScanOnPush !== undefined ? { scanOnPush: imageScanOnPush } : undefined,
                 imageTagMutability,
             });
             const result: CreateRepositoryCommandOutput = await client.send(command);

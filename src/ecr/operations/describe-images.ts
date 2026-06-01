@@ -1,4 +1,8 @@
-import { DescribeImagesCommand, DescribeImagesCommandOutput, ImageIdentifier } from '@aws-sdk/client-ecr';
+import {
+    DescribeImagesCommand,
+    DescribeImagesCommandOutput,
+    ImageIdentifier,
+} from '@aws-sdk/client-ecr';
 import { EcrContext } from '../types';
 
 export interface DescribeImagesInput {

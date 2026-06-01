@@ -1,4 +1,9 @@
-import { CreateServiceCommand, CreateServiceCommandOutput, LaunchType, AssignPublicIp } from '@aws-sdk/client-ecs';
+import {
+    CreateServiceCommand,
+    CreateServiceCommandOutput,
+    LaunchType,
+    AssignPublicIp,
+} from '@aws-sdk/client-ecs';
 import { EcsContext } from '../types';
 
 export interface CreateServiceInput {
@@ -24,7 +29,14 @@ export const createService =
     (context: EcsContext) =>
     async (input: CreateServiceInput): Promise<CreateServiceOutput> => {
         const { client, logger } = context;
-        const { cluster, serviceName, taskDefinition, desiredCount, launchType, networkConfiguration } = input;
+        const {
+            cluster,
+            serviceName,
+            taskDefinition,
+            desiredCount,
+            launchType,
+            networkConfiguration,
+        } = input;
 
         logger?.debug('create-service:start', { data: { cluster, serviceName } });
 

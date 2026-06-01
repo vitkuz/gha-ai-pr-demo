@@ -16,7 +16,9 @@ export const batchDeleteImage =
         const { client, logger } = context;
         const { repositoryName, imageIds } = input;
 
-        logger?.debug('batchDeleteImage:start', { data: { repositoryName, count: imageIds.length } });
+        logger?.debug('batchDeleteImage:start', {
+            data: { repositoryName, count: imageIds.length },
+        });
 
         try {
             const command: BatchDeleteImageCommand = new BatchDeleteImageCommand({

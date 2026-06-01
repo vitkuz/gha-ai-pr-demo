@@ -1,7 +1,4 @@
-import {
-    GetParametersByPathCommand,
-    GetParametersByPathCommandOutput,
-} from '@aws-sdk/client-ssm';
+import { GetParametersByPathCommand, GetParametersByPathCommandOutput } from '@aws-sdk/client-ssm';
 import { SsmContext } from '../types';
 
 export interface GetParametersByPathInput {

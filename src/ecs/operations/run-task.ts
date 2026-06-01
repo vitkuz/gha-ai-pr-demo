@@ -1,4 +1,9 @@
-import { RunTaskCommand, RunTaskCommandOutput, LaunchType, AssignPublicIp } from '@aws-sdk/client-ecs';
+import {
+    RunTaskCommand,
+    RunTaskCommandOutput,
+    LaunchType,
+    AssignPublicIp,
+} from '@aws-sdk/client-ecs';
 import { EcsContext } from '../types';
 
 export interface RunTaskInput {
@@ -36,7 +41,8 @@ export const runTask =
     (context: EcsContext) =>
     async (input: RunTaskInput): Promise<RunTaskOutput> => {
         const { client, logger } = context;
-        const { cluster, taskDefinition, count, launchType, networkConfiguration, overrides } = input;
+        const { cluster, taskDefinition, count, launchType, networkConfiguration, overrides } =
+            input;
 
         logger?.debug('run-task:start', { data: { cluster, taskDefinition } });
 

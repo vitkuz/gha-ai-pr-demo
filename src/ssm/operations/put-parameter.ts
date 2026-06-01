@@ -1,8 +1,4 @@
-import {
-    ParameterType,
-    PutParameterCommand,
-    PutParameterCommandOutput,
-} from '@aws-sdk/client-ssm';
+import { ParameterType, PutParameterCommand, PutParameterCommandOutput } from '@aws-sdk/client-ssm';
 import { SsmContext } from '../types';
 
 export interface PutParameterInput {
