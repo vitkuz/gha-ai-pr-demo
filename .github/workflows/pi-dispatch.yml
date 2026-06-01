@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             prompt:
-                description: 'What should Pi build? (e.g. "Add a deleteOne operation and open a PR")'
+                description: 'What should Pi build? (e.g. "Add a deleteOne operation")'
                 required: true
                 type: string
 
@@ -15,52 +15,73 @@ jobs:
             contents: write
             pull-requests: write
             issues: write
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+            REPO: ${{ github.repository }}
+            RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            TASK: ${{ inputs.prompt }}
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
-            - uses: actions/setup-node@v6
+            - uses: actions/setup-node@v4
               with:
-                  node-version: 24
+                  node-version: '20'
 
-            - name: Configure DeepSeek V4 Pro
+            - name: Build task prompt
               run: |
-                  mkdir -p ~/.pi/agent
-                  cat > ~/.pi/agent/models.json << 'EOF'
                   {
-                    "providers": {
-                      "deepseek": {
-                        "baseUrl": "https://api.deepseek.com",
-                        "apiKey": "${{ secrets.DEEPSEEK_API_KEY }}",
-                        "models": [{
-                          "id": "deepseek-v4-pro",
-                          "name": "DeepSeek V4 Pro",
-                          "api": "openai-chat",
-                          "cost": { "input": 0.000435, "output": 0.00087, "cacheRead": 0, "cacheWrite": 0 },
-                          "contextWindow": 1000000,
-                          "maxTokens": 65536
-                        }]
-                      }
-                    }
-                  }
-                  EOF
+                    echo "You are an autonomous coding agent in a checked-out git repository."
+                    echo "First read AGENTS.md and follow every repository convention in it."
+                    echo
+                    echo "## Task"
+                    printf '%s\n' "$TASK"
+                    echo
+                    echo "## Rules"
+                    echo "- Implement the task by editing files in the working directory only."
+                    echo "- Do NOT run git and do NOT open a PR yourself — the workflow branches, commits, and opens the PR."
+                    echo "- Keep the change minimal and consistent with existing patterns (mirror src/operations/create-one.ts)."
+                    echo "- Make sure the project still type-checks / builds."
+                  } > .pi-prompt.txt
 
-            - uses: shaftoe/pi-coding-agent-action@v2
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  provider: deepseek
-                  model: deepseek-v4-pro
-                  token: ${{ secrets.DEEPSEEK_API_KEY }}
-                  thinking_level: high
-                  prompt: |
-                      ${{ inputs.prompt }}
+            - name: Run pi (DeepSeek)
+              env:
+                  NO_COLOR: '1'
+              run: |
+                  npx -y @mariozechner/pi-coding-agent \
+                    -p @./.pi-prompt.txt \
+                    --provider deepseek \
+                    --model deepseek-reasoner \
+                    --tools read,write,edit,bash,grep,find,ls \
+                    --thinking high \
+                    --no-session \
+                    --no-extensions \
+                    --no-skills \
+                    | tee pi-output.md
 
-                      Follow the rules in AGENTS.md. Implement the change in this
-                      DynamoDB adapter using the existing functional patterns
-                      (no classes, curried `(context) => (input) =>` operations,
-                      explicit types, no file extensions in imports).
+            - name: Open pull request
+              run: |
+                  rm -f .pi-prompt.txt pi-output.md
+                  if [ -z "$(git status --porcelain)" ]; then
+                    echo "Pi made no file changes — nothing to open a PR for."
+                    exit 0
+                  fi
+                  BRANCH="pi/dispatch-${{ github.run_id }}"
+                  git config user.name "pi-agent[bot]"
+                  git config user.email "pi-agent@users.noreply.github.com"
+                  git checkout -b "$BRANCH"
+                  git add -A
+                  git commit -m "pi: ${TASK}"
+                  git push -u origin "$BRANCH"
+                  gh pr create \
+                    --repo "$REPO" \
+                    --base main \
+                    --head "$BRANCH" \
+                    --title "pi: ${TASK}" \
+                    --body "Automated changes by **Pi** (DeepSeek, model \`deepseek-reasoner\`).
 
-                      Then create a NEW branch, commit your changes, and open a
-                      pull request with a clear title and description using the
-                      create_pull_request tool. Do NOT push to `main`.
+                  Task: ${TASK}
+
+                  [CI run]($RUN_URL)"

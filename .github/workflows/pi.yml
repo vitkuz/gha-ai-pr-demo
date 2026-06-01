@@ -9,49 +9,103 @@ on:
 jobs:
     pi:
         if: |
-            (github.event_name == 'issues' && contains(github.event.issue.body, '/pi')) ||
-            (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/pi'))
+            github.actor != 'github-actions[bot]' &&
+            (
+              (github.event_name == 'issues' && contains(github.event.issue.body, '/pi')) ||
+              (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/pi'))
+            )
         runs-on: ubuntu-latest
         permissions:
             contents: write
             pull-requests: write
             issues: write
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+            REPO: ${{ github.repository }}
+            ISSUE_NUMBER: ${{ github.event.issue.number }}
+            RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            ISSUE_TITLE: ${{ github.event.issue.title }}
+            ISSUE_BODY: ${{ github.event.issue.body }}
+            COMMENT_BODY: ${{ github.event.comment.body }}
+            EVENT_NAME: ${{ github.event_name }}
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
-            - uses: actions/setup-node@v6
+            - uses: actions/setup-node@v4
               with:
-                  node-version: 24
+                  node-version: '20'
 
-            - name: Configure DeepSeek V4 Pro
+            - name: Acknowledge
               run: |
-                  mkdir -p ~/.pi/agent
-                  cat > ~/.pi/agent/models.json << 'EOF'
-                  {
-                    "providers": {
-                      "deepseek": {
-                        "baseUrl": "https://api.deepseek.com",
-                        "apiKey": "${{ secrets.DEEPSEEK_API_KEY }}",
-                        "models": [{
-                          "id": "deepseek-v4-pro",
-                          "name": "DeepSeek V4 Pro",
-                          "api": "openai-chat",
-                          "cost": { "input": 0.000435, "output": 0.00087, "cacheRead": 0, "cacheWrite": 0 },
-                          "contextWindow": 1000000,
-                          "maxTokens": 65536
-                        }]
-                      }
-                    }
-                  }
-                  EOF
+                  gh issue comment "$ISSUE_NUMBER" --repo "$REPO" \
+                    --body "Pi (DeepSeek \`deepseek-reasoner\`) is working on this — [view job logs]($RUN_URL)"
 
-            - uses: shaftoe/pi-coding-agent-action@v2
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  provider: deepseek
-                  model: deepseek-v4-pro
-                  token: ${{ secrets.DEEPSEEK_API_KEY }}
-                  thinking_level: high
-                  trigger: /pi
+            - name: Build task prompt
+              run: |
+                  if [ "$EVENT_NAME" = "issue_comment" ]; then
+                    RAW="$COMMENT_BODY"
+                  else
+                    RAW="$ISSUE_TITLE
+
+                  $ISSUE_BODY"
+                  fi
+                  TASK="$(printf '%s' "$RAW" | sed 's#/pi##')"
+                  {
+                    echo "You are an autonomous coding agent in a checked-out git repository."
+                    echo "First read AGENTS.md and follow every repository convention in it."
+                    echo
+                    echo "## Task"
+                    printf '%s\n' "$TASK"
+                    echo
+                    echo "## Rules"
+                    echo "- Implement the task by editing files in the working directory only."
+                    echo "- Do NOT run git and do NOT open a PR yourself — the workflow branches, commits, and opens the PR."
+                    echo "- Keep the change minimal and consistent with existing patterns (mirror src/operations/create-one.ts)."
+                    echo "- Make sure the project still type-checks / builds."
+                  } > .pi-prompt.txt
+
+            - name: Run pi (DeepSeek)
+              env:
+                  NO_COLOR: '1'
+              run: |
+                  npx -y @mariozechner/pi-coding-agent \
+                    -p @./.pi-prompt.txt \
+                    --provider deepseek \
+                    --model deepseek-reasoner \
+                    --tools read,write,edit,bash,grep,find,ls \
+                    --thinking high \
+                    --no-session \
+                    --no-extensions \
+                    --no-skills \
+                    | tee pi-output.md
+
+            - name: Open pull request
+              run: |
+                  rm -f .pi-prompt.txt pi-output.md
+                  if [ -z "$(git status --porcelain)" ]; then
+                    gh issue comment "$ISSUE_NUMBER" --repo "$REPO" \
+                      --body "Pi made no file changes — nothing to open a PR for. [logs]($RUN_URL)"
+                    exit 0
+                  fi
+                  BRANCH="pi/issue-${ISSUE_NUMBER}-${{ github.run_id }}"
+                  git config user.name "pi-agent[bot]"
+                  git config user.email "pi-agent@users.noreply.github.com"
+                  git checkout -b "$BRANCH"
+                  git add -A
+                  git commit -m "pi: address #${ISSUE_NUMBER}"
+                  git push -u origin "$BRANCH"
+                  PR_URL=$(gh pr create \
+                    --repo "$REPO" \
+                    --base main \
+                    --head "$BRANCH" \
+                    --title "pi: address #${ISSUE_NUMBER}" \
+                    --body "Automated changes by **Pi** (DeepSeek, model \`deepseek-reasoner\`) for #${ISSUE_NUMBER}.
+
+                  Triggered via the \`pi\` workflow. [CI run]($RUN_URL)
+
+                  Closes #${ISSUE_NUMBER}")
+                  gh issue comment "$ISSUE_NUMBER" --repo "$REPO" \
+                    --body "Opened PR: $PR_URL"

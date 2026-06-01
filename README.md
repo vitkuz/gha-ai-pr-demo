@@ -1,15 +1,20 @@
 # gha-ai-pr-demo
 
-A tiny demo showing how **GitHub Actions + the Pi coding agent (on DeepSeek V4 Pro)**
+A tiny demo showing how **GitHub Actions + the Pi coding agent (on DeepSeek)**
 can write code and open pull requests with **zero local editing**.
 
 The seed is a minimal functional DynamoDB adapter (`@vitkuz/dynamo-demo-adapter`)
 with a single `createOne` operation. Every new operation (`getOne`, `deleteOne`,
 `patchOne`, ...) is added by the AI agent through a PR.
 
-Agent: [`shaftoe/pi-coding-agent-action`](https://github.com/shaftoe/pi-coding-agent-action)
-wrapping the [Pi coding agent](https://github.com/earendil-works/pi), model
-`deepseek-v4-pro` via the DeepSeek API.
+Agent: the [Pi coding agent](https://www.npmjs.com/package/@mariozechner/pi-coding-agent)
+(`npx @mariozechner/pi-coding-agent`), model `deepseek-reasoner` (DeepSeek V4
+thinking mode) via the DeepSeek API. Pi only edits files; the workflow then
+branches, commits, and opens the PR with `gh` (deterministic).
+
+> Want to try the stronger `deepseek-v4-pro`? It is not a Pi-recognized model id
+> out of the box — register it via a `~/.pi/agent/models.json` step
+> (`baseUrl: https://api.deepseek.com`) and swap `--model deepseek-v4-pro`.
 
 ## How to drive it
 

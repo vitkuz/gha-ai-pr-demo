@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for the AI agent (Pi, running on DeepSeek V4 Pro) in GitHub Actions.
+Guidance for the AI agent (Pi, running on DeepSeek `deepseek-reasoner` / V4 thinking) in GitHub Actions.
 
 ## What this repo is
 
