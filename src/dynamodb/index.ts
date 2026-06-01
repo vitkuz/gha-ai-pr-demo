@@ -7,3 +7,5 @@ export * from './operations/delete-one';
 export * from './operations/patch-one';
 export * from './operations/query-by-pk';
 export * from './operations/scan';
+export * from './operations/scan-iterator';
+export * from './operations/query-by-pk-iterator';
