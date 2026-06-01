@@ -5,3 +5,4 @@ export * as sns from './sns';
 export * as sqs from './sqs';
 export * as lambda from './lambda';
 export * as eventbridge from './eventbridge';
+export * as secretsManager from './secrets-manager';
