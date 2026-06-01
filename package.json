@@ -1,0 +1,38 @@
+{
+    "name": "@vitkuz/dynamo-demo-adapter",
+    "version": "0.1.0",
+    "description": "Minimal functional DynamoDB adapter — demo seed for AI-driven PRs via GitHub Actions",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "format": "prettier --write .",
+        "check-format": "prettier --check ."
+    },
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.958.0",
+        "@aws-sdk/lib-dynamodb": "^3.958.0",
+        "uuid": "^13.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^25.0.3",
+        "@types/uuid": "^10.0.0",
+        "prettier": "^3.7.4",
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3"
+    },
+    "author": "Vitali Kuzmenka",
+    "license": "ISC"
+}

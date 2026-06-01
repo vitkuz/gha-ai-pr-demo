@@ -1,0 +1,40 @@
+name: Claude Dispatch
+
+on:
+    workflow_dispatch:
+        inputs:
+            prompt:
+                description: 'What should Claude build? (e.g. "Add a deleteOne operation and open a PR")'
+                required: true
+                type: string
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            issues: write
+            id-token: write
+            actions: read
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: anthropics/claude-code-action@v1
+              with:
+                  anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+                  prompt: |
+                      ${{ inputs.prompt }}
+
+                      Follow the rules in CLAUDE.md. Implement the change in this
+                      DynamoDB adapter using the existing functional patterns
+                      (no classes, curried `(context) => (input) =>` operations,
+                      explicit types, no file extensions in imports).
+
+                      Then create a NEW branch, commit your changes, and open a
+                      pull request with a clear title and description using
+                      `gh pr create`. Do NOT push to `main`.
+                  claude_args: |
+                      --allowedTools "Read,Edit,Write,Bash(git:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(npm:*)"
