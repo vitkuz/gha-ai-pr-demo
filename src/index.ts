@@ -8,3 +8,4 @@ export * as eventbridge from './eventbridge';
 export * as secretsManager from './secrets-manager';
 export * as ssm from './ssm';
 export * as ecr from './ecr';
+export * as ecs from './ecs';
