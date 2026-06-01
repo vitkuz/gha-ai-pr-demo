@@ -7,3 +7,4 @@ export * as lambda from './lambda';
 export * as eventbridge from './eventbridge';
 export * as secretsManager from './secrets-manager';
 export * as ssm from './ssm';
+export * as ecr from './ecr';
