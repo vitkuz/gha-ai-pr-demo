@@ -3,3 +3,7 @@ export * from './client';
 export * from './adapter';
 export * from './operations/create-one';
 export * from './operations/get-one';
+export * from './operations/delete-one';
+export * from './operations/patch-one';
+export * from './operations/query-by-pk';
+export * from './operations/scan';
