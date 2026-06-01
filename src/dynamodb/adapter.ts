@@ -8,6 +8,8 @@ import { deleteOne } from './operations/delete-one';
 import { patchOne } from './operations/patch-one';
 import { queryByPk } from './operations/query-by-pk';
 import { scan } from './operations/scan';
+import { scanIterator } from './operations/scan-iterator';
+import { queryByPkIterator } from './operations/query-by-pk-iterator';
 
 export const createAdapter = (
     config: DynamoDBClientConfig,
@@ -25,5 +27,7 @@ export const createAdapter = (
         patchOne: patchOne(context),
         queryByPk: queryByPk(context),
         scan: scan(context),
+        scanIterator: scanIterator(context),
+        queryByPkIterator: queryByPkIterator(context),
     };
 };
