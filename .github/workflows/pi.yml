@@ -67,6 +67,32 @@ jobs:
                     echo "- Make sure the project still type-checks / builds."
                   } > .pi-prompt.txt
 
+            - name: Register DeepSeek V4 Pro
+              run: |
+                  mkdir -p ~/.pi/agent
+                  cat > ~/.pi/agent/models.json <<'JSON'
+                  {
+                    "providers": {
+                      "deepseek": {
+                        "baseUrl": "https://api.deepseek.com/v1",
+                        "api": "openai-completions",
+                        "apiKey": "$DEEPSEEK_API_KEY",
+                        "models": [
+                          {
+                            "id": "deepseek-v4-pro",
+                            "name": "DeepSeek V4 Pro",
+                            "reasoning": true,
+                            "input": ["text"],
+                            "contextWindow": 1000000,
+                            "maxTokens": 65536,
+                            "cost": { "input": 0.435, "output": 0.87 }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                  JSON
+
             - name: Run pi (DeepSeek)
               env:
                   NO_COLOR: '1'
@@ -74,7 +100,7 @@ jobs:
                   npx -y @mariozechner/pi-coding-agent \
                     -p @./.pi-prompt.txt \
                     --provider deepseek \
-                    --model deepseek-reasoner \
+                    --model deepseek-v4-pro \
                     --tools read,write,edit,bash,grep,find,ls \
                     --thinking high \
                     --no-session \
