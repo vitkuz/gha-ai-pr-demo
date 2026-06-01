@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.958.0",
+        "@aws-sdk/client-eventbridge": "^3.1058.0",
         "@aws-sdk/lib-dynamodb": "^3.958.0",
         "uuid": "^13.0.0"
     },
