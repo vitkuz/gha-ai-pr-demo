@@ -1,7 +1,4 @@
-import {
-    UpdateSecretCommand,
-    UpdateSecretCommandOutput,
-} from '@aws-sdk/client-secrets-manager';
+import { UpdateSecretCommand, UpdateSecretCommandOutput } from '@aws-sdk/client-secrets-manager';
 import { SecretsManagerContext } from '../types';
 
 export interface UpdateSecretInput {

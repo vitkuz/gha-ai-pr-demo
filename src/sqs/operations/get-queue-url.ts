@@ -1,7 +1,4 @@
-import {
-    GetQueueUrlCommand,
-    GetQueueUrlCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { GetQueueUrlCommand, GetQueueUrlCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface GetQueueUrlInput {

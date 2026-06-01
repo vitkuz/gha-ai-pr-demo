@@ -22,7 +22,9 @@ export const subscribe =
                 Endpoint: endpoint,
             });
             const result: SubscribeCommandOutput = await client.send(command);
-            logger?.debug('subscribe:success', { data: { subscriptionArn: result.SubscriptionArn } });
+            logger?.debug('subscribe:success', {
+                data: { subscriptionArn: result.SubscriptionArn },
+            });
             return result;
         } catch (error) {
             logger?.debug('subscribe:error', { error });

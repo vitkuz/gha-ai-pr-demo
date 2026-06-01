@@ -1,7 +1,4 @@
-import {
-    DeleteSecretCommand,
-    DeleteSecretCommandOutput,
-} from '@aws-sdk/client-secrets-manager';
+import { DeleteSecretCommand, DeleteSecretCommandOutput } from '@aws-sdk/client-secrets-manager';
 import { SecretsManagerContext } from '../types';
 
 export interface DeleteSecretInput {
@@ -16,7 +13,9 @@ export const deleteSecret =
         const { client, logger } = context;
         const { secretId, forceDeleteWithoutRecovery, recoveryWindowInDays } = input;
 
-        logger?.debug('deleteSecret:start', { data: { secretId, forceDeleteWithoutRecovery, recoveryWindowInDays } });
+        logger?.debug('deleteSecret:start', {
+            data: { secretId, forceDeleteWithoutRecovery, recoveryWindowInDays },
+        });
 
         try {
             const command: DeleteSecretCommand = new DeleteSecretCommand({

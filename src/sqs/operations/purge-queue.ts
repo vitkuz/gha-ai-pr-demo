@@ -1,7 +1,4 @@
-import {
-    PurgeQueueCommand,
-    PurgeQueueCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { PurgeQueueCommand, PurgeQueueCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface PurgeQueueInput {

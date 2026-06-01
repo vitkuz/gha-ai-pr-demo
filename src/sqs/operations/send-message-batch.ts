@@ -1,14 +1,14 @@
-import {
-    SendMessageBatchCommand,
-    SendMessageBatchCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { SendMessageBatchCommand, SendMessageBatchCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface SendMessageBatchEntry {
     id: string;
     body: string;
     delaySeconds?: number;
-    messageAttributes?: Record<string, { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }>;
+    messageAttributes?: Record<
+        string,
+        { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }
+    >;
 }
 
 export interface SendMessageBatchInput {
@@ -31,7 +31,9 @@ export const sendMessageBatch =
                     Id: e.id,
                     MessageBody: e.body,
                     ...(e.delaySeconds !== undefined && { DelaySeconds: e.delaySeconds }),
-                    ...(e.messageAttributes !== undefined && { MessageAttributes: e.messageAttributes }),
+                    ...(e.messageAttributes !== undefined && {
+                        MessageAttributes: e.messageAttributes,
+                    }),
                 })),
             });
             const result = await client.send(command);

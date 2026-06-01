@@ -1,14 +1,14 @@
-import {
-    SendMessageCommand,
-    SendMessageCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { SendMessageCommand, SendMessageCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface SendMessageInput {
     queueUrl: string;
     body: string;
     delaySeconds?: number;
-    messageAttributes?: Record<string, { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }>;
+    messageAttributes?: Record<
+        string,
+        { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }
+    >;
 }
 
 export const sendMessage =

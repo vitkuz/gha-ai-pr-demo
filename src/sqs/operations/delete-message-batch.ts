@@ -1,7 +1,4 @@
-import {
-    DeleteMessageBatchCommand,
-    DeleteMessageBatchCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { DeleteMessageBatchCommand, DeleteMessageBatchCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface DeleteMessageBatchEntry {
@@ -20,7 +17,9 @@ export const deleteMessageBatch =
         const { client, logger } = context;
         const { queueUrl, entries } = input;
 
-        logger?.debug('deleteMessageBatch:start', { data: { queueUrl, entryCount: entries.length } });
+        logger?.debug('deleteMessageBatch:start', {
+            data: { queueUrl, entryCount: entries.length },
+        });
 
         try {
             const command = new DeleteMessageBatchCommand({

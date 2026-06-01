@@ -1,7 +1,4 @@
-import {
-    ListSecretsCommand,
-    ListSecretsCommandOutput,
-} from '@aws-sdk/client-secrets-manager';
+import { ListSecretsCommand, ListSecretsCommandOutput } from '@aws-sdk/client-secrets-manager';
 import { SecretsManagerContext } from '../types';
 
 export interface ListSecretsInput {

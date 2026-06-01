@@ -19,7 +19,9 @@ export const putTargets =
         const { client, logger } = context;
         const { rule, targets, eventBusName } = input;
 
-        logger?.debug('putTargets:start', { data: { rule, targetCount: targets.length, eventBusName } });
+        logger?.debug('putTargets:start', {
+            data: { rule, targetCount: targets.length, eventBusName },
+        });
 
         try {
             const command: PutTargetsCommand = new PutTargetsCommand({

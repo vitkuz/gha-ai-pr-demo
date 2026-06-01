@@ -50,9 +50,9 @@ export const queryByPk =
             let responseNextToken: string | undefined;
 
             if (result.LastEvaluatedKey) {
-                responseNextToken = Buffer.from(
-                    JSON.stringify(result.LastEvaluatedKey),
-                ).toString('base64');
+                responseNextToken = Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString(
+                    'base64',
+                );
             }
 
             logger?.debug('queryByPk:success', { data: { count: items.length } });

@@ -1,7 +1,4 @@
-import {
-    ReceiveMessageCommand,
-    ReceiveMessageCommandOutput,
-} from '@aws-sdk/client-sqs';
+import { ReceiveMessageCommand, ReceiveMessageCommandOutput } from '@aws-sdk/client-sqs';
 import { SqsContext } from '../types';
 
 export interface ReceiveMessagesInput {
@@ -19,7 +16,9 @@ export const receiveMessages =
 
         const cappedMax = Math.min(maxNumberOfMessages, 10);
 
-        logger?.debug('receiveMessages:start', { data: { queueUrl, maxNumberOfMessages: cappedMax } });
+        logger?.debug('receiveMessages:start', {
+            data: { queueUrl, maxNumberOfMessages: cappedMax },
+        });
 
         try {
             const command = new ReceiveMessageCommand({
@@ -29,7 +28,9 @@ export const receiveMessages =
                 ...(visibilityTimeout !== undefined && { VisibilityTimeout: visibilityTimeout }),
             });
             const result = await client.send(command);
-            logger?.debug('receiveMessages:success', { data: { messageCount: result.Messages?.length ?? 0 } });
+            logger?.debug('receiveMessages:success', {
+                data: { messageCount: result.Messages?.length ?? 0 },
+            });
             return result;
         } catch (error) {
             logger?.debug('receiveMessages:error', { error });

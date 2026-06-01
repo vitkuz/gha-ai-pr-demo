@@ -14,7 +14,9 @@ export const unsubscribe =
         logger?.debug('unsubscribe:start', { data: { subscriptionArn } });
 
         try {
-            const command: UnsubscribeCommand = new UnsubscribeCommand({ SubscriptionArn: subscriptionArn });
+            const command: UnsubscribeCommand = new UnsubscribeCommand({
+                SubscriptionArn: subscriptionArn,
+            });
             const result: UnsubscribeCommandOutput = await client.send(command);
             logger?.debug('unsubscribe:success');
             return result;

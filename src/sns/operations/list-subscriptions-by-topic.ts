@@ -1,4 +1,7 @@
-import { ListSubscriptionsByTopicCommand, ListSubscriptionsByTopicCommandOutput } from '@aws-sdk/client-sns';
+import {
+    ListSubscriptionsByTopicCommand,
+    ListSubscriptionsByTopicCommandOutput,
+} from '@aws-sdk/client-sns';
 import { SnsContext } from '../types';
 
 export interface ListSubscriptionsByTopicInput {
@@ -8,7 +11,9 @@ export interface ListSubscriptionsByTopicInput {
 
 export const listSubscriptionsByTopic =
     (context: SnsContext) =>
-    async (input: ListSubscriptionsByTopicInput): Promise<ListSubscriptionsByTopicCommandOutput> => {
+    async (
+        input: ListSubscriptionsByTopicInput,
+    ): Promise<ListSubscriptionsByTopicCommandOutput> => {
         const { client, logger } = context;
         const { topicArn, nextToken } = input;
 
@@ -20,7 +25,9 @@ export const listSubscriptionsByTopic =
                 NextToken: nextToken,
             });
             const result: ListSubscriptionsByTopicCommandOutput = await client.send(command);
-            logger?.debug('listSubscriptionsByTopic:success', { data: { count: result.Subscriptions?.length } });
+            logger?.debug('listSubscriptionsByTopic:success', {
+                data: { count: result.Subscriptions?.length },
+            });
             return result;
         } catch (error) {
             logger?.debug('listSubscriptionsByTopic:error', { error });

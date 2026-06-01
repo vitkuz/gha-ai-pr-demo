@@ -8,10 +8,7 @@ import { updateSecret } from './operations/update-secret';
 import { deleteSecret } from './operations/delete-secret';
 import { listSecrets } from './operations/list-secrets';
 
-export const createAdapter = (
-    config: SecretsManagerClientConfig,
-    logger?: Logger,
-) => {
+export const createAdapter = (config: SecretsManagerClientConfig, logger?: Logger) => {
     const client = createSecretsManagerClient(config);
     const context: SecretsManagerContext = { client, logger };
 

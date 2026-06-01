@@ -9,10 +9,7 @@ import { unsubscribe } from './operations/unsubscribe';
 import { listTopics } from './operations/list-topics';
 import { listSubscriptionsByTopic } from './operations/list-subscriptions-by-topic';
 
-export const createAdapter = (
-    config: SNSClientConfig,
-    logger?: Logger,
-) => {
+export const createAdapter = (config: SNSClientConfig, logger?: Logger) => {
     const client = createSnsClient(config);
     const context: SnsContext = { client, logger };
 

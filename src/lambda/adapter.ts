@@ -7,10 +7,7 @@ import { listFunctions } from './operations/list-functions';
 import { getFunction } from './operations/get-function';
 import { getFunctionConfiguration } from './operations/get-function-configuration';
 
-export const createAdapter = (
-    config: LambdaClientConfig,
-    logger?: Logger,
-) => {
+export const createAdapter = (config: LambdaClientConfig, logger?: Logger) => {
     const client = createLambdaClient(config);
     const context: LambdaContext = { client, logger };
 

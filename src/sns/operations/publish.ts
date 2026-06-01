@@ -5,7 +5,10 @@ export interface PublishInput {
     topicArn: string;
     message: string;
     subject?: string;
-    messageAttributes?: Record<string, { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }>;
+    messageAttributes?: Record<
+        string,
+        { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }
+    >;
 }
 
 export const publish =
@@ -21,7 +24,12 @@ export const publish =
                 TopicArn: topicArn,
                 Message: message,
                 Subject: subject,
-                MessageAttributes: messageAttributes as Record<string, { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }> | undefined,
+                MessageAttributes: messageAttributes as
+                    | Record<
+                          string,
+                          { DataType: string; StringValue?: string; BinaryValue?: Uint8Array }
+                      >
+                    | undefined,
             });
             const result: PublishCommandOutput = await client.send(command);
             logger?.debug('publish:success', { data: { messageId: result.MessageId } });

@@ -1,4 +1,8 @@
-import { ListFunctionsCommand, ListFunctionsCommandOutput, FunctionConfiguration } from '@aws-sdk/client-lambda';
+import {
+    ListFunctionsCommand,
+    ListFunctionsCommandOutput,
+    FunctionConfiguration,
+} from '@aws-sdk/client-lambda';
 import { LambdaContext } from '../types';
 
 export interface ListFunctionsInput {

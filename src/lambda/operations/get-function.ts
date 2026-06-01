@@ -20,7 +20,9 @@ export const getFunction =
         logger?.debug('get-function:start', { data: { functionName } });
 
         try {
-            const command: GetFunctionCommand = new GetFunctionCommand({ FunctionName: functionName });
+            const command: GetFunctionCommand = new GetFunctionCommand({
+                FunctionName: functionName,
+            });
             const result: GetFunctionCommandOutput = await client.send(command);
 
             logger?.debug('get-function:success');
