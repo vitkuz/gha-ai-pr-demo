@@ -3,6 +3,7 @@ import { TranslateConfig } from '@aws-sdk/lib-dynamodb';
 import { createDynamoClient } from './client';
 import { DynamoContext, Logger } from './types';
 import { createOne } from './operations/create-one';
+import { getOne } from './operations/get-one';
 
 export const createAdapter = (
     config: DynamoDBClientConfig,
@@ -15,5 +16,6 @@ export const createAdapter = (
     return {
         client,
         createOne: createOne(context),
+        getOne: getOne(context),
     };
 };
