@@ -4,9 +4,20 @@ Guidance for the AI agent (Pi, running on DeepSeek `deepseek-reasoner` / V4 thin
 
 ## What this repo is
 
-A minimal, functional **DynamoDB adapter** npm package. It is the seed for a
-demo: all new code should arrive via pull requests opened by you (the AI agent),
-triggered from GitHub Issues/comments (`/pi ...`) or the manual dispatch workflow.
+A functional, no-class **AWS adapters** package — `dynamodb`, `s3`, `sns`, `sqs`,
+`lambda` — each under `src/<service>/`. New code should arrive via pull requests
+opened by you (the AI agent), triggered from GitHub Issues/comments (`/pi ...`) or
+the manual dispatch workflow.
+
+## Layout (follow it)
+
+Each service lives in `src/<service>/` with: `client.ts` (`create<Service>Client`),
+`adapter.ts` (`createAdapter(config, logger?)`), `types.ts` (`Logger` +
+`<Service>Context`), `operations/<verb-object>.ts` (one curried op per file), and
+`index.ts` (barrel). The root `src/index.ts` re-exports each service as a namespace
+(`export * as s3 from './s3'`). When adding an operation, mirror an existing one in
+that service, wire it into that service's `adapter.ts`, and export it from that
+service's `index.ts`. Do not edit `dist/`.
 
 ## Coding rules
 

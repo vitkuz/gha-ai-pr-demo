@@ -1,48 +1,70 @@
-# gha-ai-pr-demo
+# @vitkuz/aws-demo-adapters
 
-A tiny demo showing how **GitHub Actions + the Pi coding agent (on DeepSeek)**
-can write code and open pull requests with **zero local editing**.
+Functional, no-class adapters for AWS — **DynamoDB, S3, SNS, SQS, Lambda** — built
+as a demo of an AI agent (**Pi** on DeepSeek) writing real code and opening PRs
+through GitHub Actions, with **zero local editing**.
 
-The seed is a minimal functional DynamoDB adapter (`@vitkuz/dynamo-demo-adapter`)
-with a single `createOne` operation. Every new operation (`getOne`, `deleteOne`,
-`patchOne`, ...) is added by the AI agent through a PR.
+Every adapter follows the same shape: a curried `createAdapter(config, logger?)`
+that wires per-operation functions `(context) => (input) => Promise<output>`.
 
-Agent: the [Pi coding agent](https://www.npmjs.com/package/@mariozechner/pi-coding-agent)
-(`npx @mariozechner/pi-coding-agent`), model `deepseek-reasoner` (DeepSeek V4
-thinking mode) via the DeepSeek API. Pi only edits files; the workflow then
-branches, commits, and opens the PR with `gh` (deterministic).
+## Layout
 
-> Want to try the stronger `deepseek-v4-pro`? It is not a Pi-recognized model id
-> out of the box — register it via a `~/.pi/agent/models.json` step
-> (`baseUrl: https://api.deepseek.com`) and swap `--model deepseek-v4-pro`.
+```
+src/
+  index.ts            # namespaced barrel: dynamodb, s3, sns, sqs, lambda
+  <service>/
+    client.ts         # create<Service>Client(config)
+    adapter.ts        # createAdapter(config, logger?)
+    types.ts          # Logger + <Service>Context
+    operations/*.ts   # one curried operation per file
+    index.ts          # service barrel
+```
 
-## How to drive it
+## Usage
 
-### Prerequisite (one-time)
+```ts
+import { dynamodb, s3, sns, sqs, lambda } from '@vitkuz/aws-demo-adapters';
 
-1. Add a repo secret `DEEPSEEK_API_KEY`
-   (Settings → Secrets and variables → Actions → New repository secret),
-   or: `gh secret set DEEPSEEK_API_KEY --repo vitkuz/gha-ai-pr-demo`.
-2. Settings → Actions → General → enable
-   **"Allow GitHub Actions to create and approve pull requests"**.
+const db = dynamodb.createAdapter({ region: 'us-east-1' });
+await db.createOne({ tableName: 't', item: { sk: 'PROFILE', name: 'Ada' } });
+await db.queryByPk({ tableName: 't', pk: 'USER#1' });
 
-### Option A — `/pi` in an issue or comment
+const bucket = s3.createAdapter({ region: 'us-east-1' });
+await bucket.putObject({ bucket: 'b', key: 'k.json', body: '{}' });
+const url = await bucket.getSignedUrl({ bucket: 'b', key: 'k.json' });
 
-Open a GitHub issue (or comment) starting with `/pi`, e.g.:
+const topic = sns.createAdapter({ region: 'us-east-1' });
+await topic.publish({ topicArn, message: 'hi' });
 
-> /pi Please add a `getOne` operation mirroring `create-one.ts`, wire it into
-> the adapter and barrel, and open a PR.
+const queue = sqs.createAdapter({ region: 'us-east-1' });
+await queue.sendMessage({ queueUrl, body: 'job-1' });
 
-The `pi.yml` workflow runs, implements it, and opens a PR.
+const fn = lambda.createAdapter({ region: 'us-east-1' });
+const res = await fn.invoke({ functionName: 'my-fn', payload: { x: 1 } });
+```
 
-### Option B — manual button
+### Operations per adapter
 
-Actions tab → **Pi Dispatch** → **Run workflow** → type a prompt, e.g.
-`Add a deleteOne operation following AGENTS.md and open a PR.`
+- **dynamodb** — createOne, getOne, deleteOne, patchOne, queryByPk, scan
+- **s3** — putObject, getObject, deleteObject, listObjects, headObject, copyObject, getSignedUrl
+- **sns** — publish, createTopic, deleteTopic, subscribe, unsubscribe, listTopics, listSubscriptionsByTopic
+- **sqs** — sendMessage, sendMessageBatch, receiveMessages, deleteMessage, deleteMessageBatch, getQueueUrl, getQueueAttributes, purgeQueue
+- **lambda** — invoke, invokeAsync, listFunctions, getFunction, getFunctionConfiguration
 
-## Local build (optional)
+## Let the AI agent extend it
+
+Pi (DeepSeek `deepseek-reasoner`) writes code and opens PRs. Prereqs: repo secret
+`DEEPSEEK_API_KEY` and Settings → Actions → General → "Allow GitHub Actions to
+create and approve pull requests".
+
+- **`/pi` in an issue/comment** → the `pi.yml` workflow implements it and opens a PR.
+- **Actions → Pi Dispatch → Run workflow** → free-text prompt, opens a PR.
+
+Pi only edits files; the workflow branches, commits, and opens the PR via `gh`.
+
+## Local build
 
 ```bash
 npm install
-npm run build   # outputs dist/ (ESM + CJS + .d.ts) via tsup
+npm run build   # dist/ (ESM + CJS + .d.ts) via tsup
 ```

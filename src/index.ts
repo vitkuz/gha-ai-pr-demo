@@ -1,5 +1,6 @@
-export * from './types';
-export * from './client';
-export * from './adapter';
-export * from './operations/create-one';
-export * from './operations/get-one';
+// AWS service adapters — each namespace exposes createAdapter, createClient, types, and operations.
+export * as dynamodb from './dynamodb';
+export * as s3 from './s3';
+export * as sns from './sns';
+export * as sqs from './sqs';
+export * as lambda from './lambda';

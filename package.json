@@ -1,7 +1,7 @@
 {
-    "name": "@vitkuz/dynamo-demo-adapter",
-    "version": "0.1.0",
-    "description": "Minimal functional DynamoDB adapter — demo seed for AI-driven PRs via GitHub Actions",
+    "name": "@vitkuz/aws-demo-adapters",
+    "version": "0.2.0",
+    "description": "Functional AWS adapters (DynamoDB, S3, SNS, SQS, Lambda) — demo built by AI agents via GitHub Actions",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -24,6 +24,11 @@
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.958.0",
         "@aws-sdk/lib-dynamodb": "^3.958.0",
+        "@aws-sdk/client-lambda": "^3.958.0",
+        "@aws-sdk/client-s3": "^3.958.0",
+        "@aws-sdk/client-sns": "^3.958.0",
+        "@aws-sdk/client-sqs": "^3.958.0",
+        "@aws-sdk/s3-request-presigner": "^3.958.0",
         "uuid": "^13.0.0"
     },
     "devDependencies": {
